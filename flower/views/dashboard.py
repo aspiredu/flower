@@ -39,9 +39,16 @@ class DashboardView(BaseHandler):
             if name not in events.workers:
                 continue
             worker = events.workers[name]
+            cached_worker = ListWorkers.worker_cache.get(name)
             info = dict(values)
             info.update(self._as_dict(worker))
             info.update(status=worker.alive)
+            info.update(
+                active_queues=(
+                    cached_worker['active_queues']
+                    if cached_worker and cached_worker.get('active_queues')
+                    else [])
+            )
             workers[name] = info
 
         if json:
@@ -127,6 +134,13 @@ class DashboardUpdateHandler(websocket.WebSocketHandler):
             if active < 0:
                 active = 'N/A'
 
+            cached_worker = ListWorkers.worker_cache.get(name)
+            active_queues = (
+                cached_worker['active_queues']
+                if cached_worker and cached_worker.get('active_queues')
+                else []
+            )
+
             workers[name] = dict(
                 name=name,
                 status=worker.alive,
@@ -135,7 +149,9 @@ class DashboardUpdateHandler(websocket.WebSocketHandler):
                 failed=failed,
                 succeeded=succeeded,
                 retried=retried,
-                loadavg=getattr(worker, 'loadavg', None))
+                loadavg=getattr(worker, 'loadavg', None),
+                active_queues=active_queues
+            )
         return workers
 
     def check_origin(self, origin):

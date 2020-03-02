@@ -355,11 +355,11 @@ var flower = (function () {
 
     function update_dashboard_counters() {
         var table = $('#workers-table').DataTable();
-        $('a#btn-active').text('Active: ' + table.column(2).data().reduce(sum, 0));
-        $('a#btn-processed').text('Processed: ' + table.column(3).data().reduce(sum, 0));
-        $('a#btn-failed').text('Failed: ' + table.column(4).data().reduce(sum, 0));
-        $('a#btn-succeeded').text('Succeeded: ' + table.column(5).data().reduce(sum, 0));
-        $('a#btn-retried').text('Retried: ' + table.column(6).data().reduce(sum, 0));
+        $('a#btn-active').text('Active: ' + table.column(3).data().reduce(sum, 0));
+        $('a#btn-processed').text('Processed: ' + table.column(4).data().reduce(sum, 0));
+        $('a#btn-failed').text('Failed: ' + table.column(5).data().reduce(sum, 0));
+        $('a#btn-succeeded').text('Succeeded: ' + table.column(6).data().reduce(sum, 0));
+        $('a#btn-retried').text('Retried: ' + table.column(7).data().reduce(sum, 0));
     }
 
     function on_cancel_task_filter(event) {
@@ -652,16 +652,22 @@ var flower = (function () {
             scrollCollapse: true,
             ajax: url_prefix() + '/dashboard?json=1',
             order: [
-                [1, "asc"]
+                [0, "asc"]
             ],
             columnDefs: [{
                 targets: 0,
+                data: 'active_queues',
+                render: function (data, type, full, meta) {
+                    return data.map(x => x.name).join(',')
+                }
+            }, {
+                targets: 1,
                 data: 'hostname',
                 render: function (data, type, full, meta) {
                     return '<a href="' + url_prefix() + '/worker/' + data + '">' + data + '</a>';
                 }
             }, {
-                targets: 1,
+                targets: 2,
                 data: 'status',
                 render: function (data, type, full, meta) {
                     if (data) {
@@ -671,27 +677,27 @@ var flower = (function () {
                     }
                 }
             }, {
-                targets: 2,
+                targets: 3,
                 data: 'active',
                 defaultContent: 0
             }, {
-                targets: 3,
+                targets: 4,
                 data: 'task-received',
                 defaultContent: 0
             }, {
-                targets: 4,
+                targets: 5,
                 data: 'task-failed',
                 defaultContent: 0
             }, {
-                targets: 5,
+                targets: 6,
                 data: 'task-succeeded',
                 defaultContent: 0
             }, {
-                targets: 6,
+                targets: 7,
                 data: 'task-retried',
                 defaultContent: 0
             }, {
-                targets: 7,
+                targets: 8,
                 data: 'loadavg',
                 render: function (data, type, full, meta) {
                     if (Array.isArray(data)) {

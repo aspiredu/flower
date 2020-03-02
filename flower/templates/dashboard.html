@@ -25,6 +25,7 @@
     <table id="workers-table" class="table table-bordered table-striped">
       <thead>
         <tr>
+            <th>Queues</th>
             <th>Worker Name</th>
             <th>Status</th>
             <th>Active</th>
@@ -38,6 +39,7 @@
       <tbody>
         {% for name, info in workers.items() %}
         <tr id="{{ url_escape(name) }}">
+            <td>{{ info.get('active_queues') }}</td>
             <td>{{ name }}</td>
             <td>{{ info.get('status', None) }}</td>
             <td>{{ info.get('active', 0) or 0 }}</td>
